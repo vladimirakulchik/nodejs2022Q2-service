@@ -23,7 +23,7 @@ export class UsersRepository {
     newUser.id = generateId();
     newUser.login = createUserDto.login;
     newUser.password = createUserDto.password;
-    newUser.version = 0;
+    newUser.version = 1;
     newUser.createdAt = Date.now();
     newUser.updatedAt = Date.now();
 

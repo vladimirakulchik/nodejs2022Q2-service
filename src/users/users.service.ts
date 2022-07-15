@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
@@ -12,19 +16,32 @@ export class UsersService {
     return this.usersRepository.findAll();
   }
 
-  findOne(id: string): User | undefined {
-    return this.usersRepository.findOne(id);
+  findOne(id: string): User {
+    const user: User | undefined = this.usersRepository.findOne(id);
+
+    if (!user) {
+      throw new NotFoundException(`User ${id} not found.`);
+    }
+
+    return user;
   }
 
   create(createUserDto: CreateUserDto): User {
     return this.usersRepository.create(createUserDto);
   }
 
-  update(id: string, updatePasswordDto: UpdatePasswordDto): User | undefined {
+  update(id: string, updatePasswordDto: UpdatePasswordDto): User {
+    const user: User = this.findOne(id);
+
+    if (user.password !== updatePasswordDto.oldPassword) {
+      throw new ForbiddenException('Invalid old password was provided.');
+    }
+
     return this.usersRepository.update(id, updatePasswordDto);
   }
 
   remove(id: string): void {
-    return this.usersRepository.remove(id);
+    this.findOne(id);
+    this.usersRepository.remove(id);
   }
 }
