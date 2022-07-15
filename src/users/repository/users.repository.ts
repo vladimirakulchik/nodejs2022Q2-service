@@ -3,17 +3,18 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdatePasswordDto } from '../dto/update-password.dto';
 import { User } from '../entities/user.entity';
+import { InMemoryDB } from 'src/database/in-memory.db';
 
 @Injectable()
 export class UsersRepository {
-  private users: User[] = [];
+  constructor(private db: InMemoryDB) {}
 
   findAll(): User[] {
-    return this.users;
+    return this.db.users;
   }
 
   findOne(id: string): User | undefined {
-    return this.users.find((user) => {
+    return this.db.users.find((user) => {
       return user.id === id;
     });
   }
@@ -27,7 +28,7 @@ export class UsersRepository {
     newUser.createdAt = Date.now();
     newUser.updatedAt = Date.now();
 
-    this.users.push(newUser);
+    this.db.users.push(newUser);
 
     return newUser;
   }
@@ -36,24 +37,24 @@ export class UsersRepository {
     const index = this.findIndex(id);
 
     if (index >= 0) {
-      this.users[index].password = updatePasswordDto.newPassword;
-      this.users[index].updatedAt = Date.now();
-      this.users[index].version++;
+      this.db.users[index].password = updatePasswordDto.newPassword;
+      this.db.users[index].updatedAt = Date.now();
+      this.db.users[index].version++;
     }
 
-    return this.users[index];
+    return this.db.users[index];
   }
 
   remove(id: string): void {
     const index = this.findIndex(id);
 
     if (index >= 0) {
-      this.users.splice(index, 1);
+      this.db.users.splice(index, 1);
     }
   }
 
   private findIndex(id: string): number {
-    return this.users.findIndex((user) => {
+    return this.db.users.findIndex((user) => {
       return id === user.id;
     });
   }
