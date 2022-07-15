@@ -37,9 +37,13 @@ export class UsersRepository {
     const index = this.findIndex(id);
 
     if (index >= 0) {
-      this.db.users[index].password = updatePasswordDto.newPassword;
-      this.db.users[index].updatedAt = Date.now();
-      this.db.users[index].version++;
+      const user: User = this.db.users[index];
+
+      user.password = updatePasswordDto.newPassword;
+      user.updatedAt = Date.now();
+      user.version++;
+
+      this.db.users[index] = user;
     }
 
     return this.db.users[index];
