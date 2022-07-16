@@ -10,6 +10,7 @@ import {
 import { StatusCodes } from 'http-status-codes';
 import { FavoritesDto } from './dto/favorites-dto';
 import { FavoritesService } from './favorites.service';
+import { AddResult } from './interfaces/add-result.interface';
 
 @Controller('favs')
 export class FavoritesController {
@@ -21,13 +22,17 @@ export class FavoritesController {
   }
 
   @Post('track/:id')
-  addTrack(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  addTrack(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): AddResult {
     return this.favoritesService.addTrack(id);
   }
 
   @Delete('track/:id')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteTrack(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.favoritesService.deleteTrack(id);
+  deleteTrack(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): void {
+    this.favoritesService.deleteTrack(id);
   }
 }

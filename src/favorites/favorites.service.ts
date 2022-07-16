@@ -8,6 +8,7 @@ import {
 import { AlbumsRepository } from 'src/albums/repository/albums.repository';
 import { ArtistsRepository } from 'src/artists/repository/artists.repository';
 import { TracksRepository } from 'src/tracks/repository/tracks.repository';
+import { AddResult } from './interfaces/add-result.interface';
 import { FavoritesDto } from './dto/favorites-dto';
 import { Favorites } from './entities/favorites.entity';
 import { FavoritesRepository } from './repository/favorites.repository';
@@ -32,13 +33,14 @@ export class FavoritesService {
     return favoritesDto;
   }
 
-  // return anything
-  addTrack(trackId: string): void {
+  addTrack(trackId: string): AddResult {
     if (!this.tracksRepository.isExist(trackId)) {
       throw new UnprocessableEntityException(`Track ${trackId} not found.`);
     }
 
-    return this.favoritesRepository.addTrack(trackId);
+    this.favoritesRepository.addTrack(trackId);
+
+    return { result: `Track ${trackId} was added to favorites.` };
   }
 
   deleteTrack(trackId: string): void {
