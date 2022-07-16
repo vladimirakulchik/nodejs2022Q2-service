@@ -19,6 +19,10 @@ export class AlbumsRepository {
     });
   }
 
+  findByIds(albumsIds: string[]): Album[] {
+    return this.db.albums.filter((album) => albumsIds.includes(album.id));
+  }
+
   create(createAlbumDto: CreateAlbumDto): Album {
     const newAlbum: Album = new Album();
     newAlbum.id = generateId();
@@ -55,6 +59,10 @@ export class AlbumsRepository {
     }
 
     this.removeFromTracks(id);
+  }
+
+  isExist(id: string): boolean {
+    return this.findIndex(id) >= 0;
   }
 
   private findIndex(id: string): number {

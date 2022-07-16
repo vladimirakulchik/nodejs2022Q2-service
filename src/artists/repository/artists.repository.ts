@@ -19,6 +19,10 @@ export class ArtistsRepository {
     });
   }
 
+  findByIds(artistsIds: string[]): Artist[] {
+    return this.db.artists.filter((artist) => artistsIds.includes(artist.id));
+  }
+
   create(createArtistDto: CreateArtistDto): Artist {
     const newArtist: Artist = new Artist();
     newArtist.id = generateId();
@@ -54,6 +58,10 @@ export class ArtistsRepository {
 
     this.removeFromAlbums(id);
     this.removeFromTracks(id);
+  }
+
+  isExist(id: string): boolean {
+    return this.findIndex(id) >= 0;
   }
 
   private findIndex(id: string): number {

@@ -19,6 +19,10 @@ export class TracksRepository {
     });
   }
 
+  findByIds(tracksIds: string[]): Track[] {
+    return this.db.tracks.filter((track) => tracksIds.includes(track.id));
+  }
+
   create(createTrackDto: CreateTrackDto): Track {
     const newTrack: Track = new Track();
     newTrack.id = generateId();
@@ -55,6 +59,10 @@ export class TracksRepository {
     if (index >= 0) {
       this.db.tracks.splice(index, 1);
     }
+  }
+
+  isExist(id: string): boolean {
+    return this.findIndex(id) >= 0;
   }
 
   private findIndex(id: string): number {
