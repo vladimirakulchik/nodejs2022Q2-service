@@ -36,8 +36,8 @@ export class ArtistsRepository {
     if (index >= 0) {
       const artist: Artist = this.db.artists[index];
 
-      artist.name = updateArtistDto.name;
-      artist.grammy = updateArtistDto.grammy;
+      artist.name = updateArtistDto.name ?? artist.name;
+      artist.grammy = updateArtistDto.grammy ?? artist.grammy;
 
       this.db.artists[index] = artist;
     }
