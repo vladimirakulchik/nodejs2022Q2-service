@@ -20,7 +20,7 @@ export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
 
   @Get()
-  findAll() {
+  findAll(): Artist[] {
     return this.artistsService.findAll();
   }
 

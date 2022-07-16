@@ -51,11 +51,23 @@ export class ArtistsRepository {
     if (index >= 0) {
       this.db.artists.splice(index, 1);
     }
+
+    this.removeFromAlbums(id);
   }
 
   private findIndex(id: string): number {
     return this.db.artists.findIndex((artist) => {
       return id === artist.id;
     });
+  }
+
+  private removeFromAlbums(artistId: string): void {
+    const index = this.db.albums.findIndex((album) => {
+      return artistId === album.artistId;
+    });
+
+    if (index >= 0) {
+      this.db.albums[index].artistId = null;
+    }
   }
 }
