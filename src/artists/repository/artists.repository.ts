@@ -53,6 +53,7 @@ export class ArtistsRepository {
     }
 
     this.removeFromAlbums(id);
+    this.removeFromTracks(id);
   }
 
   private findIndex(id: string): number {
@@ -68,6 +69,16 @@ export class ArtistsRepository {
 
     if (index >= 0) {
       this.db.albums[index].artistId = null;
+    }
+  }
+
+  private removeFromTracks(artistId: string): void {
+    const index = this.db.tracks.findIndex((track) => {
+      return artistId === track.artistId;
+    });
+
+    if (index >= 0) {
+      this.db.tracks[index].artistId = null;
     }
   }
 }

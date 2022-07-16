@@ -53,11 +53,23 @@ export class AlbumsRepository {
     if (index >= 0) {
       this.db.albums.splice(index, 1);
     }
+
+    this.removeFromTracks(id);
   }
 
   private findIndex(id: string): number {
     return this.db.albums.findIndex((album) => {
       return id === album.id;
     });
+  }
+
+  private removeFromTracks(albumId: string): void {
+    const index = this.db.tracks.findIndex((track) => {
+      return albumId === track.albumId;
+    });
+
+    if (index >= 0) {
+      this.db.tracks[index].albumId = null;
+    }
   }
 }
