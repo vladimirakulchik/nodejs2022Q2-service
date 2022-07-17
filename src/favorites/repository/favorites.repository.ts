@@ -14,8 +14,12 @@ export class FavoritesRepository {
     this.db.favorites.tracks.push(trackId);
   }
 
+  isFavoriteTrack(trackId: string): boolean {
+    return this.findIndex(this.db.favorites.tracks, trackId) >= 0;
+  }
+
   deleteTrack(trackId: string): boolean {
-    const index = this.db.favorites.tracks.findIndex((id) => id === trackId);
+    const index = this.findIndex(this.db.favorites.tracks, trackId);
 
     if (index < 0) {
       return false;
@@ -29,8 +33,12 @@ export class FavoritesRepository {
     this.db.favorites.albums.push(albumId);
   }
 
+  isFavoriteAlbum(albumId: string): boolean {
+    return this.findIndex(this.db.favorites.albums, albumId) >= 0;
+  }
+
   deleteAlbum(albumId: string): boolean {
-    const index = this.db.favorites.albums.findIndex((id) => id === albumId);
+    const index = this.findIndex(this.db.favorites.albums, albumId);
 
     if (index < 0) {
       return false;
@@ -44,8 +52,12 @@ export class FavoritesRepository {
     this.db.favorites.artists.push(artistId);
   }
 
+  isFavoriteArtist(artistId: string): boolean {
+    return this.findIndex(this.db.favorites.artists, artistId) >= 0;
+  }
+
   deleteArtist(artistId: string): boolean {
-    const index = this.db.favorites.artists.findIndex((id) => id === artistId);
+    const index = this.findIndex(this.db.favorites.artists, artistId);
 
     if (index < 0) {
       return false;
@@ -53,5 +65,9 @@ export class FavoritesRepository {
 
     this.db.favorites.artists.splice(index, 1);
     return true;
+  }
+
+  private findIndex(arr: string[], itemId: string): number {
+    return arr.findIndex((id) => id === itemId);
   }
 }

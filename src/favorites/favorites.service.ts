@@ -27,6 +27,7 @@ export class FavoritesService {
 
   getFavorites(): FavoritesDto {
     const favorites: Favorites = this.favoritesRepository.getFavorites();
+
     const favoritesDto = new FavoritesDto();
     favoritesDto.artists = this.artistsRepository.findByIds(favorites.artists);
     favoritesDto.albums = this.albumsRepository.findByIds(favorites.albums);
@@ -40,7 +41,9 @@ export class FavoritesService {
       throw new UnprocessableEntityException(`Track ${trackId} not found.`);
     }
 
-    this.favoritesRepository.addTrack(trackId);
+    if (!this.favoritesRepository.isFavoriteTrack(trackId)) {
+      this.favoritesRepository.addTrack(trackId);
+    }
 
     return { result: `Track ${trackId} was added to favorites.` };
   }
@@ -58,7 +61,9 @@ export class FavoritesService {
       throw new UnprocessableEntityException(`Album ${albumId} not found.`);
     }
 
-    this.favoritesRepository.addAlbum(albumId);
+    if (!this.favoritesRepository.isFavoriteAlbum(albumId)) {
+      this.favoritesRepository.addAlbum(albumId);
+    }
 
     return { result: `Album ${albumId} was added to favorites.` };
   }
@@ -76,7 +81,9 @@ export class FavoritesService {
       throw new UnprocessableEntityException(`Artist ${artistId} not found.`);
     }
 
-    this.favoritesRepository.addArtist(artistId);
+    if (!this.favoritesRepository.isFavoriteArtist(artistId)) {
+      this.favoritesRepository.addArtist(artistId);
+    }
 
     return { result: `Artist ${artistId} was added to favorites.` };
   }
