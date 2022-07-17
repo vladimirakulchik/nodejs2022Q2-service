@@ -19,6 +19,7 @@ export class FavoritesService {
     private readonly favoritesRepository: FavoritesRepository,
     @Inject(forwardRef(() => TracksRepository))
     private readonly tracksRepository: TracksRepository,
+    @Inject(forwardRef(() => ArtistsRepository))
     private readonly artistsRepository: ArtistsRepository,
     @Inject(forwardRef(() => AlbumsRepository))
     private readonly albumsRepository: AlbumsRepository,
@@ -67,6 +68,24 @@ export class FavoritesService {
 
     if (!deleted) {
       throw new NotFoundException(`Album ${albumId} not found.`);
+    }
+  }
+
+  addArtist(artistId: string): AddResult {
+    if (!this.artistsRepository.isExist(artistId)) {
+      throw new UnprocessableEntityException(`Artist ${artistId} not found.`);
+    }
+
+    this.favoritesRepository.addArtist(artistId);
+
+    return { result: `Artist ${artistId} was added to favorites.` };
+  }
+
+  deleteArtist(artistId: string): void {
+    const deleted = this.favoritesRepository.deleteArtist(artistId);
+
+    if (!deleted) {
+      throw new NotFoundException(`Artist ${artistId} not found.`);
     }
   }
 }

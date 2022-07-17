@@ -12,7 +12,7 @@ import { TracksModule } from 'src/tracks/tracks.module';
     DatabaseModule,
     forwardRef(() => TracksModule),
     forwardRef(() => AlbumsModule),
-    ArtistsModule,
+    forwardRef(() => ArtistsModule),
   ],
   controllers: [FavoritesController],
   providers: [FavoritesService, FavoritesRepository],

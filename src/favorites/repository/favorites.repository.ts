@@ -39,4 +39,19 @@ export class FavoritesRepository {
     this.db.favorites.albums.splice(index, 1);
     return true;
   }
+
+  addArtist(artistId: string): void {
+    this.db.favorites.artists.push(artistId);
+  }
+
+  deleteArtist(artistId: string): boolean {
+    const index = this.db.favorites.artists.findIndex((id) => id === artistId);
+
+    if (index < 0) {
+      return false;
+    }
+
+    this.db.favorites.artists.splice(index, 1);
+    return true;
+  }
 }
