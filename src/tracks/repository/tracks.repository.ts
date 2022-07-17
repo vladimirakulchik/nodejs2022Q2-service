@@ -69,6 +69,14 @@ export class TracksRepository {
     });
   }
 
+  removeArtist(artistId: string): void {
+    this.db.tracks.forEach((track: Track) => {
+      if (track.artistId === artistId) {
+        track.artistId = null;
+      }
+    });
+  }
+
   isExist(id: string): boolean {
     return this.findIndex(id) >= 0;
   }

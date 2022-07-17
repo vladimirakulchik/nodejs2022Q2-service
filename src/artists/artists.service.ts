@@ -4,7 +4,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { AlbumsRepository } from 'src/albums/repository/albums.repository';
 import { FavoritesRepository } from 'src/favorites/repository/favorites.repository';
+import { TracksRepository } from 'src/tracks/repository/tracks.repository';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
@@ -16,6 +18,10 @@ export class ArtistsService {
     private readonly artistsRepository: ArtistsRepository,
     @Inject(forwardRef(() => FavoritesRepository))
     private readonly favoritesRepository: FavoritesRepository,
+    @Inject(forwardRef(() => TracksRepository))
+    private readonly tracksRepository: TracksRepository,
+    @Inject(forwardRef(() => AlbumsRepository))
+    private readonly albumsRepository: AlbumsRepository,
   ) {}
 
   findAll(): Artist[] {
@@ -45,6 +51,8 @@ export class ArtistsService {
   remove(id: string): void {
     this.findOne(id);
     this.artistsRepository.remove(id);
+    this.tracksRepository.removeArtist(id);
+    this.albumsRepository.removeArtist(id);
     this.favoritesRepository.deleteArtist(id);
   }
 }

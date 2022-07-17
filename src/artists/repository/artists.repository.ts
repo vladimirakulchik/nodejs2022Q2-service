@@ -55,9 +55,6 @@ export class ArtistsRepository {
     if (index >= 0) {
       this.db.artists.splice(index, 1);
     }
-
-    this.removeFromAlbums(id);
-    this.removeFromTracks(id);
   }
 
   isExist(id: string): boolean {
@@ -68,25 +65,5 @@ export class ArtistsRepository {
     return this.db.artists.findIndex((artist) => {
       return id === artist.id;
     });
-  }
-
-  private removeFromAlbums(artistId: string): void {
-    const index = this.db.albums.findIndex((album) => {
-      return artistId === album.artistId;
-    });
-
-    if (index >= 0) {
-      this.db.albums[index].artistId = null;
-    }
-  }
-
-  private removeFromTracks(artistId: string): void {
-    const index = this.db.tracks.findIndex((track) => {
-      return artistId === track.artistId;
-    });
-
-    if (index >= 0) {
-      this.db.tracks[index].artistId = null;
-    }
   }
 }

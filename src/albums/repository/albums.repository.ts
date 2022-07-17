@@ -59,6 +59,14 @@ export class AlbumsRepository {
     }
   }
 
+  removeArtist(artistId: string): void {
+    this.db.albums.forEach((album: Album) => {
+      if (album.artistId === artistId) {
+        album.artistId = null;
+      }
+    });
+  }
+
   isExist(id: string): boolean {
     return this.findIndex(id) >= 0;
   }
