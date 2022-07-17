@@ -11,8 +11,8 @@ import { TracksModule } from 'src/tracks/tracks.module';
   imports: [
     DatabaseModule,
     forwardRef(() => TracksModule),
+    forwardRef(() => AlbumsModule),
     ArtistsModule,
-    AlbumsModule,
   ],
   controllers: [FavoritesController],
   providers: [FavoritesService, FavoritesRepository],

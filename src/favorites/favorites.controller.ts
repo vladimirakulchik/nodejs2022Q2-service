@@ -35,4 +35,19 @@ export class FavoritesController {
   ): void {
     this.favoritesService.deleteTrack(id);
   }
+
+  @Post('album/:id')
+  addAlbum(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): AddResult {
+    return this.favoritesService.addAlbum(id);
+  }
+
+  @Delete('album/:id')
+  @HttpCode(StatusCodes.NO_CONTENT)
+  deleteAlbum(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): void {
+    this.favoritesService.deleteAlbum(id);
+  }
 }

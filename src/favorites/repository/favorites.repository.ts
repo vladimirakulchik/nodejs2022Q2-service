@@ -24,4 +24,19 @@ export class FavoritesRepository {
     this.db.favorites.tracks.splice(index, 1);
     return true;
   }
+
+  addAlbum(albumId: string): void {
+    this.db.favorites.albums.push(albumId);
+  }
+
+  deleteAlbum(albumId: string): boolean {
+    const index = this.db.favorites.albums.findIndex((id) => id === albumId);
+
+    if (index < 0) {
+      return false;
+    }
+
+    this.db.favorites.albums.splice(index, 1);
+    return true;
+  }
 }
