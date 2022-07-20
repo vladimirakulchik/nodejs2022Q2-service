@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  api:
+    build:
+      context: .
+    volumes:
+      - ./:/usr/app
+      - /usr/app/node_modules
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    restart: always
+    networks:
+      - homelibrary
+    depends_on:
+      - db
+  db:
+    build:
+      context: database
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PG_DATA=${POSTGRES_DB_DATA_PATH}
+    volumes:
+      - db-data:${POSTGRES_DB_DATA_PATH}
+      - db-logs:/var/log/postgresql/
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    restart: always
+    networks:
+      - homelibrary
+    command: ["postgres", "-c", "logging_collector=on"]
+
+networks:
+  homelibrary:
+    driver: bridge
+volumes:
+  db-data:
+  db-logs:
