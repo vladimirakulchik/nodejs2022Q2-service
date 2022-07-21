@@ -26,17 +26,14 @@ services:
       - PG_DATA=${POSTGRES_DB_DATA_PATH}
     volumes:
       - db-data:${POSTGRES_DB_DATA_PATH}
-      - db-logs:/var/log/postgresql/
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     restart: always
     networks:
       - homelibrary
-    command: ["postgres", "-c", "logging_collector=on"]
 
 networks:
   homelibrary:
     driver: bridge
 volumes:
   db-data:
-  db-logs:
