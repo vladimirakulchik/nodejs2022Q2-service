@@ -13,7 +13,7 @@ export class ArtistsService {
   ) {}
 
   async findAll(): Promise<Artist[]> {
-    return this.artistsRepository.find();
+    return await this.artistsRepository.find();
   }
 
   async findOne(id: string): Promise<Artist> {

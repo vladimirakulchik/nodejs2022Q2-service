@@ -1,32 +1,25 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { FavoritesRepository } from 'src/favorites/repository/favorites.repository';
-import { TracksRepository } from 'src/tracks/repository/tracks.repository';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
-import { AlbumsRepository } from './repository/albums.repository';
 
 @Injectable()
 export class AlbumsService {
   constructor(
-    private readonly albumsRepository: AlbumsRepository,
-    @Inject(forwardRef(() => FavoritesRepository))
-    private readonly favoritesRepository: FavoritesRepository,
-    @Inject(forwardRef(() => TracksRepository))
-    private readonly tracksRepository: TracksRepository,
+    @InjectRepository(Album)
+    private readonly albumsRepository: Repository<Album>,
   ) {}
 
-  findAll(): Album[] {
-    return this.albumsRepository.findAll();
+  async findAll(): Promise<Album[]> {
+    return await this.albumsRepository.find();
   }
 
-  findOne(id: string): Album {
-    const album: Album | undefined = this.albumsRepository.findOne(id);
+  async findOne(id: string): Promise<Album> {
+    const album: Album | null = await this.albumsRepository.findOneBy({
+      id,
+    });
 
     if (!album) {
       throw new NotFoundException(`Album ${id} not found.`);
@@ -35,20 +28,21 @@ export class AlbumsService {
     return album;
   }
 
-  create(createAlbumDto: CreateAlbumDto): Album {
-    return this.albumsRepository.create(createAlbumDto);
+  async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
+    const album: Album = this.albumsRepository.create(createAlbumDto);
+
+    return await this.albumsRepository.save(album);
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto): Album {
-    this.findOne(id);
+  async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
+    await this.findOne(id);
+    await this.albumsRepository.update(id, updateAlbumDto);
 
-    return this.albumsRepository.update(id, updateAlbumDto);
+    return await this.findOne(id);
   }
 
-  remove(id: string): void {
-    this.findOne(id);
-    this.albumsRepository.remove(id);
-    this.tracksRepository.removeAlbum(id);
-    this.favoritesRepository.deleteAlbum(id);
+  async remove(id: string): Promise<void> {
+    await this.findOne(id);
+    await this.albumsRepository.delete(id);
   }
 }

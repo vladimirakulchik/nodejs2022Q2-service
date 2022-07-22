@@ -5,7 +5,6 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { AlbumsRepository } from 'src/albums/repository/albums.repository';
 import { TracksRepository } from 'src/tracks/repository/tracks.repository';
 import { AddResult } from './interfaces/add-result.interface';
 import { FavoritesDto } from './dto/favorites-dto';
@@ -18,8 +17,6 @@ export class FavoritesService {
     private readonly favoritesRepository: FavoritesRepository,
     @Inject(forwardRef(() => TracksRepository))
     private readonly tracksRepository: TracksRepository,
-    @Inject(forwardRef(() => AlbumsRepository))
-    private readonly albumsRepository: AlbumsRepository,
   ) {}
 
   getFavorites(): FavoritesDto {
@@ -27,7 +24,7 @@ export class FavoritesService {
 
     const favoritesDto = new FavoritesDto();
     // favoritesDto.artists = this.artistsRepository.findByIds(favorites.artists);
-    favoritesDto.albums = this.albumsRepository.findByIds(favorites.albums);
+    // favoritesDto.albums = this.albumsRepository.findByIds(favorites.albums);
     favoritesDto.tracks = this.tracksRepository.findByIds(favorites.tracks);
 
     return favoritesDto;
@@ -54,9 +51,9 @@ export class FavoritesService {
   }
 
   addAlbum(albumId: string): AddResult {
-    if (!this.albumsRepository.isExist(albumId)) {
-      throw new UnprocessableEntityException(`Album ${albumId} not found.`);
-    }
+    // if (!this.albumsRepository.isExist(albumId)) {
+    //   throw new UnprocessableEntityException(`Album ${albumId} not found.`);
+    // }
 
     if (!this.favoritesRepository.isFavoriteAlbum(albumId)) {
       this.favoritesRepository.addAlbum(albumId);
