@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { readFile } from 'fs/promises';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { parse } from 'yaml';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -13,7 +13,7 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
 
-  const apiFilePath: string = join(dirname(__dirname), 'doc', 'api.yaml');
+  const apiFilePath: string = join('doc', 'api.yaml');
   const apiFile: string = await readFile(apiFilePath, 'utf-8');
   SwaggerModule.setup('doc', app, parse(apiFile));
 

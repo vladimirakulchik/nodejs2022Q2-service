@@ -20,7 +20,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "scan:api": "docker scan nodejs2022q2-service_api",
-    "scan:db": "docker scan nodejs2022q2-service_db"
+    "scan:db": "docker scan nodejs2022q2-service_db",
+    "migration:generate": "ts-node ./node_modules/.bin/typeorm migration:generate -d ormconfig.ts",
+    "migration:run": "ts-node ./node_modules/.bin/typeorm migration:run -d ormconfig.ts",
+    "migration:revert": "ts-node ./node_modules/.bin/typeorm migration:revert -d ormconfig.ts",
+    "migration:show": "ts-node ./node_modules/.bin/typeorm migration:show -d ormconfig.ts"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
