@@ -10,11 +10,12 @@ import { TracksModule } from 'src/tracks/tracks.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Artist]),
-    forwardRef(() => FavoritesModule),
-    forwardRef(() => TracksModule),
-    forwardRef(() => AlbumsModule),
+    // forwardRef(() => FavoritesModule),
+    // forwardRef(() => TracksModule),
+    // forwardRef(() => AlbumsModule),
   ],
   controllers: [ArtistsController],
   providers: [ArtistsService],
+  exports: [TypeOrmModule],
 })
 export class ArtistsModule {}
