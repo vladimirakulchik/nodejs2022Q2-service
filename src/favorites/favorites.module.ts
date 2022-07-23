@@ -12,7 +12,7 @@ import { TracksModule } from 'src/tracks/tracks.module';
     TypeOrmModule.forFeature([Favorites]),
     ArtistsModule,
     AlbumsModule,
-    // TracksModule,
+    TracksModule,
   ],
   controllers: [FavoritesController],
   providers: [FavoritesService],

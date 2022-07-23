@@ -21,20 +21,20 @@ export class FavoritesController {
   //   return await this.favoritesService.getFavorites();
   // }
 
-  // @Post('track/:id')
-  // async addTrack(
-  //   @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  // ): Promise<AddResult> {
-  //   return await this.favoritesService.addTrack(id);
-  // }
+  @Post('track/:id')
+  async addTrack(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<AddResult> {
+    return await this.favoritesService.addTrack(id);
+  }
 
-  // @Delete('track/:id')
-  // @HttpCode(StatusCodes.NO_CONTENT)
-  // async deleteTrack(
-  //   @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  // ): Promise<void> {
-  //   await this.favoritesService.deleteTrack(id);
-  // }
+  @Delete('track/:id')
+  @HttpCode(StatusCodes.NO_CONTENT)
+  async deleteTrack(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<void> {
+    await this.favoritesService.deleteTrack(id);
+  }
 
   @Post('album/:id')
   async addAlbum(

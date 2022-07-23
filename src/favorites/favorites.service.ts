@@ -10,6 +10,7 @@ import { FavoritesDto } from './dto/favorites-dto';
 import { Favorites } from './entities/favorites.entity';
 import { Artist } from 'src/artists/entities/artist.entity';
 import { Album } from 'src/albums/entities/album.entity';
+import { Track } from 'src/tracks/entities/track.entity';
 
 @Injectable()
 export class FavoritesService {
@@ -20,6 +21,8 @@ export class FavoritesService {
     private readonly artistsRepository: Repository<Artist>,
     @InjectRepository(Album)
     private readonly albumsRepository: Repository<Album>,
+    @InjectRepository(Track)
+    private readonly tracksRepository: Repository<Track>,
   ) {}
 
   async getFavorites(): Promise<Favorites> {
@@ -38,25 +41,38 @@ export class FavoritesService {
     // return favoritesDto;
   }
 
-  // addTrack(trackId: string): AddResult {
-  //   // if (!this.tracksRepository.isExist(trackId)) {
-  //   //   throw new UnprocessableEntityException(`Track ${trackId} not found.`);
-  //   // }
+  async addTrack(trackId: string): Promise<AddResult> {
+    const favorites: Favorites = await this.getFavorites();
+    const track: Track | null = await this.tracksRepository.findOneBy({
+      id: trackId,
+    });
 
-  //   if (!this.favoritesRepository.isFavoriteTrack(trackId)) {
-  //     this.favoritesRepository.addTrack(trackId);
-  //   }
+    if (!track) {
+      throw new UnprocessableEntityException(`Track ${trackId} not found.`);
+    }
 
-  //   return { result: `Track ${trackId} was added to favorites.` };
-  // }
+    if (!this.isItemExist(favorites.tracks, trackId)) {
+      favorites.tracks.push(track);
+    }
 
-  // deleteTrack(trackId: string): void {
-  //   const deleted = this.favoritesRepository.deleteTrack(trackId);
+    await this.favoritesRepository.save(favorites);
 
-  //   if (!deleted) {
-  //     throw new NotFoundException(`Track ${trackId} not found.`);
-  //   }
-  // }
+    return { result: `Track ${trackId} was added to favorites.` };
+  }
+
+  async deleteTrack(trackId: string): Promise<void> {
+    const favorites: Favorites = await this.getFavorites();
+
+    if (!this.isItemExist(favorites.tracks, trackId)) {
+      throw new NotFoundException(`Track ${trackId} was not in favorites.`);
+    }
+
+    favorites.tracks = favorites.tracks.filter((track: Track) => {
+      return track.id !== trackId;
+    });
+
+    await this.favoritesRepository.save(favorites);
+  }
 
   async addAlbum(albumId: string): Promise<AddResult> {
     const favorites: Favorites = await this.getFavorites();
