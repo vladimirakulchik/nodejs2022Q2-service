@@ -44,7 +44,12 @@ export class TracksService {
 
   async update(id: string, updateTrackDto: UpdateTrackDto): Promise<Track> {
     await this.findOne(id);
-    await this.tracksRepository.update(id, updateTrackDto);
+
+    try {
+      await this.tracksRepository.update(id, updateTrackDto);
+    } catch (error) {
+      throw new BadRequestException('Invalid track data.');
+    }
 
     return await this.findOne(id);
   }

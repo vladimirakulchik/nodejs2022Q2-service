@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -29,14 +33,23 @@ export class AlbumsService {
   }
 
   async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
-    const album: Album = this.albumsRepository.create(createAlbumDto);
+    try {
+      const album: Album = this.albumsRepository.create(createAlbumDto);
 
-    return await this.albumsRepository.save(album);
+      return await this.albumsRepository.save(album);
+    } catch (error) {
+      throw new BadRequestException('Invalid album data.');
+    }
   }
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
     await this.findOne(id);
-    await this.albumsRepository.update(id, updateAlbumDto);
+
+    try {
+      await this.albumsRepository.update(id, updateAlbumDto);
+    } catch (error) {
+      throw new BadRequestException('Invalid album data.');
+    }
 
     return await this.findOne(id);
   }
