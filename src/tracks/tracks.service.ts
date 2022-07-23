@@ -1,29 +1,29 @@
 import {
-  forwardRef,
-  Inject,
+  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FavoritesRepository } from 'src/favorites/repository/favorites.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { TracksRepository } from './repository/tracks.repository';
 
 @Injectable()
 export class TracksService {
   constructor(
-    private readonly tracksRepository: TracksRepository,
-    @Inject(forwardRef(() => FavoritesRepository))
-    private readonly favoritesRepository: FavoritesRepository,
+    @InjectRepository(Track)
+    private readonly tracksRepository: Repository<Track>,
   ) {}
 
-  findAll(): Track[] {
-    return this.tracksRepository.findAll();
+  async findAll(): Promise<Track[]> {
+    return await this.tracksRepository.find();
   }
 
-  findOne(id: string): Track {
-    const track: Track | undefined = this.tracksRepository.findOne(id);
+  async findOne(id: string): Promise<Track> {
+    const track: Track | null = await this.tracksRepository.findOneBy({
+      id,
+    });
 
     if (!track) {
       throw new NotFoundException(`Track ${id} not found.`);
@@ -32,19 +32,25 @@ export class TracksService {
     return track;
   }
 
-  create(createTrackDto: CreateTrackDto): Track {
-    return this.tracksRepository.create(createTrackDto);
+  async create(createTrackDto: CreateTrackDto): Promise<Track> {
+    try {
+      const track: Track = this.tracksRepository.create(createTrackDto);
+
+      return await this.tracksRepository.save(track);
+    } catch (error) {
+      throw new BadRequestException('Invalid track data.');
+    }
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto): Track {
-    this.findOne(id);
+  async update(id: string, updateTrackDto: UpdateTrackDto): Promise<Track> {
+    await this.findOne(id);
+    await this.tracksRepository.update(id, updateTrackDto);
 
-    return this.tracksRepository.update(id, updateTrackDto);
+    return await this.findOne(id);
   }
 
-  remove(id: string): void {
-    this.findOne(id);
-    this.tracksRepository.remove(id);
-    this.favoritesRepository.deleteTrack(id);
+  async remove(id: string): Promise<void> {
+    await this.findOne(id);
+    await this.tracksRepository.delete(id);
   }
 }

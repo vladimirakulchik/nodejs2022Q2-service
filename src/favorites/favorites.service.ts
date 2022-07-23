@@ -1,11 +1,8 @@
 import {
-  forwardRef,
-  Inject,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { TracksRepository } from 'src/tracks/repository/tracks.repository';
 import { AddResult } from './interfaces/add-result.interface';
 import { FavoritesDto } from './dto/favorites-dto';
 import { Favorites } from './entities/favorites.entity';
@@ -13,11 +10,7 @@ import { FavoritesRepository } from './repository/favorites.repository';
 
 @Injectable()
 export class FavoritesService {
-  constructor(
-    private readonly favoritesRepository: FavoritesRepository,
-    @Inject(forwardRef(() => TracksRepository))
-    private readonly tracksRepository: TracksRepository,
-  ) {}
+  constructor(private readonly favoritesRepository: FavoritesRepository) {}
 
   getFavorites(): FavoritesDto {
     const favorites: Favorites = this.favoritesRepository.getFavorites();
@@ -25,15 +18,15 @@ export class FavoritesService {
     const favoritesDto = new FavoritesDto();
     // favoritesDto.artists = this.artistsRepository.findByIds(favorites.artists);
     // favoritesDto.albums = this.albumsRepository.findByIds(favorites.albums);
-    favoritesDto.tracks = this.tracksRepository.findByIds(favorites.tracks);
+    // favoritesDto.tracks = this.tracksRepository.findByIds(favorites.tracks);
 
     return favoritesDto;
   }
 
   addTrack(trackId: string): AddResult {
-    if (!this.tracksRepository.isExist(trackId)) {
-      throw new UnprocessableEntityException(`Track ${trackId} not found.`);
-    }
+    // if (!this.tracksRepository.isExist(trackId)) {
+    //   throw new UnprocessableEntityException(`Track ${trackId} not found.`);
+    // }
 
     if (!this.favoritesRepository.isFavoriteTrack(trackId)) {
       this.favoritesRepository.addTrack(trackId);
