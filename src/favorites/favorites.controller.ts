@@ -6,20 +6,23 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpCode,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
-import { FavoritesDto } from './dto/favorites-dto';
+import { Favorites } from './entities/favorites.entity';
 import { FavoritesService } from './favorites.service';
 import { AddResult } from './interfaces/add-result.interface';
 
 @Controller('favs')
+@UseInterceptors(ClassSerializerInterceptor)
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
-  // @Get()
-  // async getFavorites(): Promise<FavoritesDto> {
-  //   return await this.favoritesService.getFavorites();
-  // }
+  @Get()
+  async getFavorites(): Promise<Favorites> {
+    return await this.favoritesService.getFavorites();
+  }
 
   @Post('track/:id')
   async addTrack(

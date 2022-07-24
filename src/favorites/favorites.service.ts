@@ -6,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AddResult } from './interfaces/add-result.interface';
-import { FavoritesDto } from './dto/favorites-dto';
 import { Favorites } from './entities/favorites.entity';
 import { Artist } from 'src/artists/entities/artist.entity';
 import { Album } from 'src/albums/entities/album.entity';
@@ -31,14 +30,6 @@ export class FavoritesService {
     // There is no user id for Favorites.
     // So, just use the first item from the array.
     return favorites[0];
-
-    // const favorites: Favorites = this.favoritesRepository.getFavorites();
-    // const favoritesDto = new FavoritesDto();
-    // favoritesDto.artists = this.artistsRepository.findByIds(favorites.artists);
-    // favoritesDto.albums = this.albumsRepository.findByIds(favorites.albums);
-    // favoritesDto.tracks = this.tracksRepository.findByIds(favorites.tracks);
-
-    // return favoritesDto;
   }
 
   async addTrack(trackId: string): Promise<AddResult> {
