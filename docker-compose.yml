@@ -12,6 +12,7 @@ services:
     ports:
       - ${PORT}:${PORT}
     restart: unless-stopped
+    command: sh -c 'npm run migration:run && npm run start:dev'
     networks:
       - homelibrary
     depends_on:
