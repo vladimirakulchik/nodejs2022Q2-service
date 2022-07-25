@@ -3,9 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FavoritesService } from './favorites.service';
 import { FavoritesController } from './favorites.controller';
 import { Favorites } from './entities/favorites.entity';
-import { AlbumsModule } from 'src/albums/albums.module';
-import { ArtistsModule } from 'src/artists/artists.module';
-import { TracksModule } from 'src/tracks/tracks.module';
+import { AlbumsModule } from '../albums/albums.module';
+import { ArtistsModule } from '../artists/artists.module';
+import { TracksModule } from '../tracks/tracks.module';
 
 @Module({
   imports: [

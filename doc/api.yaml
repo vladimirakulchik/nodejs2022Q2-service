@@ -552,6 +552,7 @@ paths:
                   type: string
                 year:
                   type: integer
+                  example: 2022
                 artistId:
                   type: string
                   format: uuid
