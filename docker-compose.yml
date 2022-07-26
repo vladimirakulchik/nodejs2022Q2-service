@@ -11,7 +11,7 @@ services:
       - .env
     ports:
       - ${PORT}:${PORT}
-    restart: always
+    restart: unless-stopped
     networks:
       - homelibrary
     depends_on:
@@ -28,7 +28,7 @@ services:
       - db-data:${POSTGRES_DB_DATA_PATH}
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    restart: always
+    restart: unless-stopped
     networks:
       - homelibrary
 
