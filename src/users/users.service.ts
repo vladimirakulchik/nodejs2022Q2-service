@@ -1,23 +1,28 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
-import { UsersRepository } from './repository/users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+  ) {}
 
-  findAll(): User[] {
-    return this.usersRepository.findAll();
+  async findAll(): Promise<User[]> {
+    return await this.usersRepository.find();
   }
 
-  findOne(id: string): User {
-    const user: User | undefined = this.usersRepository.findOne(id);
+  async findOne(id: string): Promise<User> {
+    const user: User | null = await this.usersRepository.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException(`User ${id} not found.`);
@@ -26,22 +31,33 @@ export class UsersService {
     return user;
   }
 
-  create(createUserDto: CreateUserDto): User {
-    return this.usersRepository.create(createUserDto);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    try {
+      const user: User = this.usersRepository.create(createUserDto);
+
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      throw new BadRequestException('Invalid user data. Login already in use.');
+    }
   }
 
-  update(id: string, updatePasswordDto: UpdatePasswordDto): User {
-    const user: User = this.findOne(id);
+  async update(
+    id: string,
+    updatePasswordDto: UpdatePasswordDto,
+  ): Promise<User> {
+    const user: User = await this.findOne(id);
 
     if (user.password !== updatePasswordDto.oldPassword) {
       throw new ForbiddenException('Invalid old password was provided.');
     }
 
-    return this.usersRepository.update(id, updatePasswordDto);
+    user.password = updatePasswordDto.newPassword;
+
+    return await this.usersRepository.save(user);
   }
 
-  remove(id: string): void {
-    this.findOne(id);
-    this.usersRepository.remove(id);
+  async remove(id: string): Promise<void> {
+    await this.findOne(id);
+    await this.usersRepository.delete(id);
   }
 }

@@ -20,31 +20,35 @@ export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 
   @Get()
-  findAll(): Track[] {
-    return this.tracksService.findAll();
+  async findAll(): Promise<Track[]> {
+    return await this.tracksService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Track {
-    return this.tracksService.findOne(id);
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<Track> {
+    return await this.tracksService.findOne(id);
   }
 
   @Post()
-  create(@Body() createTrackDto: CreateTrackDto): Track {
-    return this.tracksService.create(createTrackDto);
+  async create(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
+    return await this.tracksService.create(createTrackDto);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateTrackDto: UpdateTrackDto,
-  ): Track {
-    return this.tracksService.update(id, updateTrackDto);
+  ): Promise<Track> {
+    return await this.tracksService.update(id, updateTrackDto);
   }
 
   @Delete(':id')
   @HttpCode(StatusCodes.NO_CONTENT)
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): void {
-    this.tracksService.remove(id);
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<void> {
+    await this.tracksService.remove(id);
   }
 }
