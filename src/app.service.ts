@@ -8,7 +8,8 @@ export class AppService {
   ) {}
 
   getHello(): string {
-    this.logger.log('Log anything here!');
+    // this.logger.log('Log anything here!');
+    // throw new Error('Test exception');
 
     return 'Hello World!';
   }
