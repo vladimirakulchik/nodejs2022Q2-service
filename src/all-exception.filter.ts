@@ -31,7 +31,11 @@ export class AllExceptionFilter implements ExceptionFilter {
         ? exception.getResponse()
         : this.getInternalErrorResponse();
 
-    this.logger.error(exception);
+    this.logger.error(
+      exception.name ?? '',
+      exception.message ?? '',
+      exception.stack ?? '',
+    );
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
