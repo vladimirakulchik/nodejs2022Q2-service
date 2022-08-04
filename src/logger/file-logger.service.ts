@@ -10,6 +10,7 @@ import {
 } from 'fs';
 import { EOL } from 'os';
 import { join } from 'path';
+import { LogLevel } from './level.enum';
 
 export class FileLogger implements LoggerService {
   private logsLevel: number;
@@ -40,11 +41,19 @@ export class FileLogger implements LoggerService {
   }
 
   log(message: any, ...optionalParams: any[]): void {
+    if (!this.checkLogLevel(LogLevel.LOG)) {
+      return;
+    }
+
     const data: any[] = [this.getDate() + ' [LOG]', message, ...optionalParams];
     this.writeToFile(this.logsFileName, data, this.renameLogsFile);
   }
 
   error(message: any, ...optionalParams: any[]): void {
+    if (!this.checkLogLevel(LogLevel.ERROR)) {
+      return;
+    }
+
     const data: any[] = [
       this.getDate() + ' [ERROR]',
       message,
@@ -58,6 +67,10 @@ export class FileLogger implements LoggerService {
   }
 
   warn(message: any, ...optionalParams: any[]): void {
+    if (!this.checkLogLevel(LogLevel.WARN)) {
+      return;
+    }
+
     const data: any[] = [
       this.getDate() + ' [WARN]',
       message,
@@ -67,6 +80,10 @@ export class FileLogger implements LoggerService {
   }
 
   debug?(message: any, ...optionalParams: any[]): void {
+    if (!this.checkLogLevel(LogLevel.DEBUG)) {
+      return;
+    }
+
     const data: any[] = [
       this.getDate() + ' [DEBUG]',
       message,
@@ -76,12 +93,20 @@ export class FileLogger implements LoggerService {
   }
 
   verbose?(message: any, ...optionalParams: any[]): void {
+    if (!this.checkLogLevel(LogLevel.VERBOSE)) {
+      return;
+    }
+
     const data: any[] = [
       this.getDate() + ' [VERBOSE]',
       message,
       ...optionalParams,
     ];
     this.writeToFile(this.logsFileName, data, this.renameLogsFile);
+  }
+
+  private checkLogLevel(level: LogLevel): boolean {
+    return level <= this.logsLevel;
   }
 
   private writeToFile(
