@@ -1,5 +1,13 @@
 import { LoggerService } from '@nestjs/common';
-import { existsSync, mkdirSync, statSync, writeFileSync } from 'fs';
+import {
+  accessSync,
+  constants,
+  existsSync,
+  mkdirSync,
+  Stats,
+  statSync,
+  writeFileSync,
+} from 'fs';
 import { EOL } from 'os';
 import { join } from 'path';
 
@@ -9,55 +17,71 @@ export class FileLogger implements LoggerService {
   private logsFileName: string;
   private errorsFileName: string;
   private maxFileSize: number;
+  private writeErrorsToAnotherFile: boolean;
 
   constructor(
     logsLevel: number,
-    logsDir?: string,
-    logsFileName?: string,
-    errorsFileName?: string,
-    maxFileSize?: number,
+    maxFileSize: number,
+    logsDir: string,
+    logsFileName: string,
+    errorsFileName: string,
+    writeErrorsToAnotherFile: boolean,
   ) {
     this.logsLevel = logsLevel;
+    this.maxFileSize = maxFileSize;
+
     this.logsDir = this.resolveDirectory(logsDir);
     this.logsFileName = logsFileName;
+    this.renameLogsFile();
+
     this.errorsFileName = errorsFileName;
-    this.maxFileSize = maxFileSize;
+    this.renameErrorsFile();
+    this.writeErrorsToAnotherFile = writeErrorsToAnotherFile;
   }
 
   log(message: any, ...optionalParams: any[]): void {
-    const data: any[] = ['[LOG]', message, ...optionalParams];
+    const data: any[] = [this.getDate() + ' [LOG]', message, ...optionalParams];
     this.writeToFile(this.logsFileName, data, this.renameLogsFile);
   }
 
   error(message: any, ...optionalParams: any[]): void {
-    const data: any[] = ['[ERROR]', message, ...optionalParams];
+    const data: any[] = [
+      this.getDate() + ' [ERROR]',
+      message,
+      ...optionalParams,
+    ];
     this.writeToFile(this.logsFileName, data, this.renameLogsFile);
-    this.writeToFile(this.errorsFileName, data, this.renameErrorsFile);
+
+    if (this.writeErrorsToAnotherFile) {
+      this.writeToFile(this.errorsFileName, data, this.renameErrorsFile);
+    }
   }
 
   warn(message: any, ...optionalParams: any[]): void {
-    const data: any[] = ['[WARN]', message, ...optionalParams];
+    const data: any[] = [
+      this.getDate() + ' [WARN]',
+      message,
+      ...optionalParams,
+    ];
     this.writeToFile(this.logsFileName, data, this.renameLogsFile);
   }
 
   debug?(message: any, ...optionalParams: any[]): void {
-    const data: any[] = ['[DEBUG]', message, ...optionalParams];
+    const data: any[] = [
+      this.getDate() + ' [DEBUG]',
+      message,
+      ...optionalParams,
+    ];
     this.writeToFile(this.logsFileName, data, this.renameLogsFile);
   }
 
   verbose?(message: any, ...optionalParams: any[]): void {
-    const data: any[] = ['[VERBOSE]', message, ...optionalParams];
+    const data: any[] = [
+      this.getDate() + ' [VERBOSE]',
+      message,
+      ...optionalParams,
+    ];
     this.writeToFile(this.logsFileName, data, this.renameLogsFile);
-  }
-
-  private resolveDirectory(directoryName: string): string {
-    const path: string = join(__dirname, '../../..', directoryName);
-
-    if (!existsSync(directoryName)) {
-      mkdirSync(directoryName, { recursive: true });
-    }
-
-    return path;
   }
 
   private writeToFile(
@@ -65,50 +89,64 @@ export class FileLogger implements LoggerService {
     data: any[],
     renameFile: () => string,
   ): void {
-    data.forEach((item) => {
-      let file: string = filename;
-      const text: string =
-        typeof item === 'string' ? item : JSON.stringify(item);
-      const message = text + EOL;
+    let file: string = filename;
 
-      // if (!this.isEnoughSpace(filename, message.length)) {
-      //   file = renameFile();
-      // }
+    data.forEach((logItem) => {
+      const message = this.convertToString(logItem);
 
-      const filepath: string = join(this.logsDir, file);
-      writeFileSync(filepath, message, { flag: 'a' });
+      if (this.shouldCreateNewFile(join(this.logsDir, file), message.length)) {
+        file = renameFile();
+      }
+
+      this.createDirectory(this.logsDir);
+      writeFileSync(join(this.logsDir, file), message, { flag: 'a' });
     });
   }
 
-  private isEnoughSpace(filename: string, extraSize: number): boolean {
-    const emptySpace = this.getEmptySpaceInFile(filename);
+  private isFileExist(filename: string): boolean {
+    try {
+      accessSync(filename, constants.R_OK | constants.W_OK);
+    } catch (error) {
+      return false;
+    }
 
-    return emptySpace >= extraSize;
+    return true;
+  }
+
+  private shouldCreateNewFile(filename: string, extraSize: number): boolean {
+    if (!this.isFileExist(filename)) {
+      return false;
+    }
+
+    const emptySpace: number = this.getEmptySpaceInFile(filename);
+
+    return emptySpace < extraSize;
   }
 
   private getEmptySpaceInFile(filename: string): number {
-    const size = this.getFileSize(filename);
+    const size: number = this.getFileSize(filename);
+    const emptySpace: number = this.maxFileSize - size;
 
-    return this.maxFileSize - size;
+    return emptySpace > 0 ? emptySpace : 0;
   }
 
   private getFileSize(filename: string): number {
-    const stats = statSync(filename);
+    const stats: Stats = statSync(filename);
 
     return stats.size;
   }
 
-  private renameLogsFile(): string {
+  private renameLogsFile = (): string => {
     this.logsFileName = this.generateNewFilename(this.logsFileName);
 
     return this.logsFileName;
-  }
+  };
 
-  private renameErrorsFile(): string {
+  private renameErrorsFile = (): string => {
     this.errorsFileName = this.generateNewFilename(this.errorsFileName);
 
     return this.errorsFileName;
-  }
+  };
 
   private generateNewFilename(filename: string): string {
     const parts: string[] = filename.split('.');
@@ -119,5 +157,31 @@ export class FileLogger implements LoggerService {
     parts[index] = newName;
 
     return parts.join('.');
+  }
+
+  private resolveDirectory(directoryName: string): string {
+    const path: string = join(__dirname, '../../..', directoryName);
+    this.createDirectory(path);
+
+    return path;
+  }
+
+  private createDirectory(path: string): void {
+    if (!existsSync(path)) {
+      mkdirSync(path, { recursive: true });
+    }
+  }
+
+  private getDate(): string {
+    const now = new Date();
+
+    return now.toISOString();
+  }
+
+  private convertToString(logItem: any): string {
+    const text: string =
+      typeof logItem === 'string' ? logItem : JSON.stringify(logItem);
+
+    return text + EOL;
   }
 }

@@ -9,7 +9,7 @@ export class AppService {
 
   getHello(): string {
     // this.logger.log('Log anything here!', 'Test', 'string', { as: 'dfsdf' });
-    throw new Error('Test exception');
+    // throw new Error('Test exception');
 
     return 'Hello World!';
   }
