@@ -8,13 +8,16 @@ import {
   ParseUUIDPipe,
   Put,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { TracksService } from './tracks.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('track')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}

@@ -8,13 +8,16 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 
+@UseGuards(JwtAuthGuard)
 @Controller('artist')
 export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
