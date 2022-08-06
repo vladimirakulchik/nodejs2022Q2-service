@@ -33,6 +33,12 @@ export class UsersService {
     return user;
   }
 
+  async findOneByLogin(login: string): Promise<User | null> {
+    const user: User | null = await this.usersRepository.findOneBy({ login });
+
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       createUserDto.password = await this.generateHash(createUserDto.password);

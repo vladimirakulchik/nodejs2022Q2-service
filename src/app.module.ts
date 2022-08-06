@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { ormConfig } from '../orm-config';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { AllExceptionFilter } from './all-exception.filter';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AllExceptionFilter } from './all-exception.filter';
     TracksModule,
     FavoritesModule,
     LoggerModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
