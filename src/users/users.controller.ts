@@ -10,13 +10,16 @@ import {
   ClassSerializerInterceptor,
   UseInterceptors,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
-import { UsersService } from './users.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
+import { UsersService } from './users.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {

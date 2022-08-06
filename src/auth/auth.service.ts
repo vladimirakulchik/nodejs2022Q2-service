@@ -1,9 +1,10 @@
+import { compare } from 'bcrypt';
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import { SignupResult } from './interfaces/signup-result.interface';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -15,13 +16,16 @@ export class AuthService {
   async validateUser(login: string, password: string): Promise<User> {
     const user = await this.usersService.findOneByLogin(login);
 
-    if (user) {
-      // && user.password === password
-
-      return user;
+    if (!user) {
+      return null;
     }
 
-    return null;
+    const isValidPassword: boolean = await compare(
+      password,
+      user.password ?? '',
+    );
+
+    return isValidPassword ? user : null;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<SignupResult> {
@@ -42,5 +46,15 @@ export class AuthService {
         expiresIn: '1h',
       }),
     };
+  }
+
+  async findUser(id: string): Promise<User> {
+    try {
+      const user = await this.usersService.findOne(id);
+
+      return user;
+    } catch (error) {
+      return null;
+    }
   }
 }
