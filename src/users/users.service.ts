@@ -1,12 +1,11 @@
 import 'dotenv/config';
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { compare, hash } from 'bcrypt';
+import { compare, compareSync, hash } from 'bcrypt';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -39,16 +38,28 @@ export class UsersService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      createUserDto.password = await this.generateHash(createUserDto.password);
+  async findOneByLoginAndPassword(
+    login: string,
+    password: string,
+  ): Promise<User | null> {
+    const users: User[] = await this.usersRepository.findBy({ login });
+    const user = users.find((user: User) => {
+      return compareSync(password, user.password);
+    });
 
-      const user: User = this.usersRepository.create(createUserDto);
-
-      return await this.usersRepository.save(user);
-    } catch (error) {
-      throw new BadRequestException('Invalid user data. Login already in use.');
+    if (user) {
+      return user;
     }
+
+    return null;
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    createUserDto.password = await this.generateHash(createUserDto.password);
+
+    const user: User = this.usersRepository.create(createUserDto);
+
+    return await this.usersRepository.save(user);
   }
 
   async update(
