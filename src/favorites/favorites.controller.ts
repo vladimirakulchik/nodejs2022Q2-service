@@ -6,63 +6,66 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpCode,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
-import { FavoritesDto } from './dto/favorites-dto';
+import { Favorites } from './entities/favorites.entity';
 import { FavoritesService } from './favorites.service';
 import { AddResult } from './interfaces/add-result.interface';
 
 @Controller('favs')
+@UseInterceptors(ClassSerializerInterceptor)
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  getFavorites(): FavoritesDto {
-    return this.favoritesService.getFavorites();
+  async getFavorites(): Promise<Favorites> {
+    return await this.favoritesService.getFavorites();
   }
 
   @Post('track/:id')
-  addTrack(
+  async addTrack(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): AddResult {
-    return this.favoritesService.addTrack(id);
+  ): Promise<AddResult> {
+    return await this.favoritesService.addTrack(id);
   }
 
   @Delete('track/:id')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteTrack(
+  async deleteTrack(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): void {
-    this.favoritesService.deleteTrack(id);
+  ): Promise<void> {
+    await this.favoritesService.deleteTrack(id);
   }
 
   @Post('album/:id')
-  addAlbum(
+  async addAlbum(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): AddResult {
-    return this.favoritesService.addAlbum(id);
+  ): Promise<AddResult> {
+    return await this.favoritesService.addAlbum(id);
   }
 
   @Delete('album/:id')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteAlbum(
+  async deleteAlbum(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): void {
-    this.favoritesService.deleteAlbum(id);
+  ): Promise<void> {
+    await this.favoritesService.deleteAlbum(id);
   }
 
   @Post('artist/:id')
-  addArtist(
+  async addArtist(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): AddResult {
-    return this.favoritesService.addArtist(id);
+  ): Promise<AddResult> {
+    return await this.favoritesService.addArtist(id);
   }
 
   @Delete('artist/:id')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteArtist(
+  async deleteArtist(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): void {
-    this.favoritesService.deleteArtist(id);
+  ): Promise<void> {
+    await this.favoritesService.deleteArtist(id);
   }
 }

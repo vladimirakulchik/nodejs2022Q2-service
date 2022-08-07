@@ -110,7 +110,7 @@ npm run scan:api
 npm run scan:db
 ```
 
-### Database files and logs
+## Database files and logs
 
 Database files and logs are stored in docker volumes.
 
@@ -145,4 +145,31 @@ You can find database logs in `log` subdirectory.
 You can check all volumes using next command:
 ```
 docker volume ls
+```
+
+## Database migrations
+
+There are migrations files in the `database/migrations` folder.
+
+These migrations files will be run during starting application. You don't need to do it manually.
+
+But if you want to run them manually, use next algorithm:
+
+Check docker container name:
+```
+docker container ls -a
+```
+You are looking for name for api service.
+
+Attach to docker container. You can do it only after application start:
+```
+docker exec -it nodejs2022q2-service_api_1 sh
+```
+
+You can use next commands to show, generate, run and revert migrations:
+```
+npm run migration:show
+npm run migration:generate
+npm run migration:run
+npm run migration:revert
 ```
