@@ -4,8 +4,9 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import { SignupResult } from './interfaces/signup-result.interface';
 import { authConfig } from './auth.config';
+import { JwtTokens } from './interfaces/jwt-tokens.interface';
+import { SignupResult } from './interfaces/signup-result.interface';
 
 @Injectable()
 export class AuthService {
@@ -37,15 +38,8 @@ export class AuthService {
     };
   }
 
-  async login(user: User) {
-    const payload = { userId: user.id, login: user.login };
-
-    return {
-      accessToken: this.jwtService.sign(payload, {
-        secret: authConfig.secretKey,
-        expiresIn: authConfig.expireTime,
-      }),
-    };
+  async login(user: User): Promise<JwtTokens> {
+    return this.generateJwtTokens(this.getPayload(user));
   }
 
   async findUser(id: string): Promise<User> {
@@ -56,5 +50,32 @@ export class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  private getPayload(user: User): any {
+    return { userId: user.id, login: user.login };
+  }
+
+  private generateJwtTokens(payload: any): JwtTokens {
+    return {
+      accessToken: this.generateAccessToken(payload),
+      refreshToken: this.generateRefreshToken(payload),
+    };
+  }
+
+  private generateAccessToken(payload: any): string {
+    return this.jwtService.sign(payload, {
+      secret: authConfig.secretKey,
+      expiresIn: authConfig.expireTime,
+    });
+  }
+
+  private generateRefreshToken(payload: any): string {
+    payload.refresh = true;
+
+    return this.jwtService.sign(payload, {
+      secret: authConfig.refreshSecretKey,
+      expiresIn: authConfig.refreshExpireTime,
+    });
   }
 }
