@@ -7,6 +7,7 @@ import {
   Inject,
   LoggerService,
 } from '@nestjs/common';
+import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { HttpAdapterHost } from '@nestjs/core';
 
 @Catch()
@@ -19,7 +20,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 
   catch(exception: any, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;
-    const ctx = host.switchToHttp();
+    const context: HttpArgumentsHost = host.switchToHttp();
 
     const httpStatus: number =
       exception instanceof HttpException
@@ -37,7 +38,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       exception.stack ?? '',
     );
 
-    httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+    httpAdapter.reply(context.getResponse(), responseBody, httpStatus);
   }
 
   getInternalErrorResponse(): any {
