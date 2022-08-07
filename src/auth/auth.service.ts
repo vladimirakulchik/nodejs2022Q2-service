@@ -5,6 +5,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import { SignupResult } from './interfaces/signup-result.interface';
+import { authConfig } from './auth.config';
 
 @Injectable()
 export class AuthService {
@@ -41,9 +42,8 @@ export class AuthService {
 
     return {
       accessToken: this.jwtService.sign(payload, {
-        secret: '12345',
-        noTimestamp: true,
-        expiresIn: '1h',
+        secret: authConfig.secretKey,
+        expiresIn: authConfig.expireTime,
       }),
     };
   }
