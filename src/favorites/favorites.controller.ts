@@ -8,15 +8,12 @@ import {
   HttpCode,
   UseInterceptors,
   ClassSerializerInterceptor,
-  UseGuards,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Favorites } from './entities/favorites.entity';
 import { FavoritesService } from './favorites.service';
 import { AddResult } from './interfaces/add-result.interface';
 
-@UseGuards(JwtAuthGuard)
 @Controller('favs')
 @UseInterceptors(ClassSerializerInterceptor)
 export class FavoritesController {

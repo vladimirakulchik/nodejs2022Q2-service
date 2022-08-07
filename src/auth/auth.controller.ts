@@ -13,7 +13,9 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-auth.guard';
 import { JwtTokens } from './interfaces/jwt-tokens.interface';
 import { SignupResult } from './interfaces/signup-result.interface';
+import { Public } from './public.decorator';
 
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
