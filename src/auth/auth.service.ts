@@ -38,10 +38,6 @@ export class AuthService {
     };
   }
 
-  async login(user: User): Promise<JwtTokens> {
-    return this.generateJwtTokens(this.getPayload(user));
-  }
-
   async findUser(id: string): Promise<User> {
     try {
       const user = await this.usersService.findOne(id);
@@ -50,6 +46,10 @@ export class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  async authorize(user: User): Promise<JwtTokens> {
+    return this.generateJwtTokens(this.getPayload(user));
   }
 
   private getPayload(user: User): any {

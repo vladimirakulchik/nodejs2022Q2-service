@@ -10,6 +10,7 @@ import { StatusCodes } from 'http-status-codes';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { RefreshAuthGuard } from './guards/refresh-auth.guard';
 import { JwtTokens } from './interfaces/jwt-tokens.interface';
 import { SignupResult } from './interfaces/signup-result.interface';
 
@@ -26,6 +27,13 @@ export class AuthController {
   @Post('login')
   @HttpCode(StatusCodes.OK)
   async login(@Request() request: any): Promise<JwtTokens> {
-    return this.authService.login(request.user);
+    return this.authService.authorize(request.user);
+  }
+
+  @UseGuards(RefreshAuthGuard)
+  @Post('refresh')
+  @HttpCode(StatusCodes.OK)
+  async refresh(@Request() request: any): Promise<any> {
+    return this.authService.authorize(request.user);
   }
 }
