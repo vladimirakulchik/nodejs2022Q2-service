@@ -21,18 +21,18 @@ export class LoggerMiddleware implements NestMiddleware {
 
       let message = `${method} ${path} `;
       message += this.isEmpty(query) ? '' : `query: ${JSON.stringify(query)} `;
-      message += this.isEmpty(body) ? '' : `body: JSON.stringify(body) `;
+      message += this.isEmpty(body) ? '' : `body: ${JSON.stringify(body)} `;
       message += `-> ${statusCode} ${statusMessage}`;
 
-      // if (statusCode >= 500) {
-      //   this.logger.error(message);
-      // }
+      if (statusCode >= 500) {
+        this.logger.error(message);
+      }
 
-      // if (statusCode >= 400) {
-      //   this.logger.warn(message);
-      // }
-
-      this.logger.log(message);
+      if (statusCode >= 400) {
+        this.logger.warn(message);
+      } else {
+        this.logger.log(message);
+      }
     });
 
     next();
