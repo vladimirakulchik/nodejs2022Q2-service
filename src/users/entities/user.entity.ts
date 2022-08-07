@@ -14,7 +14,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Index({ unique: true })
+  @Index({ unique: false })
   @Column()
   login: string;
 

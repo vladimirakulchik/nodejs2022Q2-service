@@ -12,10 +12,10 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
-import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
+import { UsersService } from './users.service';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
